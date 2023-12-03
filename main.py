@@ -1,3 +1,5 @@
+import requests
+import numpy as np
 import cv2
 import face_recognition
 import keyboard
@@ -6,28 +8,23 @@ import pickle
 from halo import Halo
 from datetime import datetime
 
+# Flask video feed URL
+flask_app_url = 'http://192.168.141.118:8000/video_feed'
 
+# Loading face encodings
 ENCODINGS_DIR = "./FaceEncodings"
 TOLERANCE = 0.5
 
-# check if web-cam is available or not? how to do so?, then process images.
-
 spinner = Halo(spinner="dots", placement="right")
 
-# launch the webcam first
-spinner.text = "Launching web cam"
-spinner.start()
-videoCapture = cv2.VideoCapture(0)
-spinner.stop()
+# Create a VideoCapture object using Flask video feed
+videoCapture = cv2.VideoCapture(flask_app_url)
 
-if videoCapture.isOpened():
-    print("Web-cam launched!")
-else:
-    print("Error while launching web-cam!")
+if not videoCapture.isOpened():
+    print("Error while connecting to the video feed!")
     exit(1)
 
-# read pre-computed face encodings
-
+# Read pre-computed face encodings
 names, face_encodings = [], []
 num_people, num_encodings = 0, 0
 
@@ -56,17 +53,16 @@ def stop_running():
     running = False
     keyboard.send("\b")
 
-def markAtt(name):
-    with open('Attendance.csv','r+') as f:
-        Data = f.readlines()
-        nameList = []
-        for line in Data:
-            entry = line.split(',')
-            nameList.append(entry[0])
-        if name not in nameList:
+
+def mark_attendance(name):
+    with open('Attendance.csv', 'r+') as f:
+        data = f.readlines()
+        name_list = [entry.split(',')[0] for entry in data]
+        if name not in name_list:
             now = datetime.now()
-            date_time_string = now.strftime('%H : %M : %S')
+            date_time_string = now.strftime('%H:%M:%S')
             f.writelines(f'\n{name},{date_time_string}')
+
 
 running = True
 
@@ -74,8 +70,6 @@ keyboard.add_hotkey("esc", stop_running, suppress=True)
 
 while running:
     _, frame = videoCapture.read()
-    # flip the image horizontally
-    # cv2.flip(frame, 1, frame)
 
     text_labels = []
     boxes = []
@@ -83,7 +77,6 @@ while running:
 
     face_locations = face_recognition.face_locations(frame)
 
-    # use K-D Tree? 128-dimensional output from the face_recognition, similar to latent space?
     for face_location in face_locations:
         top, right, bottom, left = face_location
         boxes.append([(left, top), (right, bottom)])
@@ -111,13 +104,12 @@ while running:
 
         if guessed_names[0][0] < TOLERANCE:
             identified_names.append(guessed_names[0][1])
-            markAtt(guessed_names[0][1])
-
+            mark_attendance(guessed_names[0][1])
 
     for label in text_labels:
         font = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
-        fontScale = label[2] / cv2.getTextSize(label[0], font, 2, 1)[0][0] * 2
-        w, h = cv2.getTextSize(label[0], font, fontScale, 2)[0]
+        font_scale = label[2] / cv2.getTextSize(label[0], font, 2, 1)[0][0] * 2
+        w, h = cv2.getTextSize(label[0], font, font_scale, 2)[0]
         cv2.rectangle(
             frame,
             (label[1][0], label[1][1] + 2),
@@ -130,7 +122,7 @@ while running:
             label[0],
             (label[1][0], label[1][1] + h),
             font,
-            fontScale,
+            font_scale,
             [255] * 3,
             2,
         )
@@ -148,42 +140,5 @@ while running:
 
     print(f'\x1b[2K\r{identified_names if len(identified_names) > 0 else ""}', end="")
 
-
 videoCapture.release()
 cv2.destroyAllWindows()
-
-
-# use images to create encodings for faces
-
-# print('Processing images...')
-# names, face_encodings = [], []
-# num_people, img_processed = 0, 0
-
-# for folder in os.listdir(IMG_DIR):
-#     face_encoding = []
-#     for filename in os.listdir(f'{IMG_DIR}/{folder}'):
-#         if filename.rsplit('.')[-1] in ['jpg', 'jpeg', 'png']:
-#             image = face_recognition.load_image_file(f'{IMG_DIR}/{folder}/{filename}')
-#             face_locations = face_recognition.face_locations(image)
-#             if len(face_locations) > 0:
-#                 face_encoding.append(face_recognition.face_encodings(image, known_face_locations=face_locations)[0])
-#
-#             img_processed += 1
-#
-#     names.append(folder)
-#     face_encodings.append(face_encoding)
-#
-#     num_people += 1
-#
-# print(f'{num_people} people, {img_processed} images processed!')
-
-
-# save the encodings for all faces within their respective directories
-
-# for name, face_encoding in zip(names, face_encodings):
-#     if not os.path.isdir(f'face_encodings/{name}'):
-#         os.mkdir(f'face_encodings/{name}')
-#
-#     for index, encoding in enumerate(face_encoding):
-#         with open(f'face_encodings/{name}/{name}_{index}.pkl', 'wb') as fptr:
-#             pickle.dump(encoding, fptr)
