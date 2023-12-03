@@ -66,8 +66,8 @@ def mark_attendance(name):
 
 running = True
 
-keyboard.add_hotkey("esc", stop_running, suppress=True)
-
+# keyboard.add_hotkey("esc", stop_running, suppress=True)
+ESC_PRESSED = False
 while running:
     _, frame = videoCapture.read()
 
@@ -139,6 +139,8 @@ while running:
     identified_names.sort()
 
     print(f'\x1b[2K\r{identified_names if len(identified_names) > 0 else ""}', end="")
-
+	# Check if the ESC key is pressed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        ESC_PRESSED = True
 videoCapture.release()
 cv2.destroyAllWindows()
