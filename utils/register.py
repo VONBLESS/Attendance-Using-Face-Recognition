@@ -35,10 +35,10 @@ def capture_photos(save_directory, desired_name, num_photos=5):
     cv2.destroyAllWindows()
 
     # Run the face_encodings.py script
-    subprocess.run(["/home/ubuntu/Desktop/esiot/myenv/bin/python3", "/home/ubuntu/Desktop/esiot/Attendance-Using-Face-Recognition/utils/face_encodings.py"])
+    subprocess.run(["python3", "/Attendance-Using-Face-Recognition/utils/face_encodings.py"])
 
 if __name__ == "__main__":
-    save_directory = "/home/ubuntu/Desktop/esiot/Attendance-Using-Face-Recognition/Faces"
+    save_directory = "/Attendance-Using-Face-Recognition/Faces"
     
     # Ask the user for the desired name
     desired_name = input("Enter the desired name for the photos: ")
