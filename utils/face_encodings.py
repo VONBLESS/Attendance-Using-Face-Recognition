@@ -5,8 +5,8 @@ import pickle
 from halo import Halo
 
 
-IMG_DIR = "D:\PROJECTS\Attendance_fr\Faces"
-ENCODINGS_DIR = "D:\PROJECTS\Attendance_fr\FaceEncodings"
+IMG_DIR = "/home/ubuntu/Desktop/esiot/Attendance-Using-Face-Recognition/Faces"
+ENCODINGS_DIR = "/home/ubuntu/Desktop/esiot/Attendance-Using-Face-Recognition/FaceEncodings"
 
 if not os.path.isdir(ENCODINGS_DIR):
     os.mkdir(ENCODINGS_DIR)
