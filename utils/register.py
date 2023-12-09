@@ -44,6 +44,6 @@ if __name__ == "__main__":
     desired_name = input("Enter the desired name for the photos: ")
 
     # Corrected variable name to num_photos
-    num_photos = 5
+    num_photos = 10
 
     capture_photos(save_directory, desired_name, num_photos)
