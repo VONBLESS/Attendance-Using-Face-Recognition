@@ -1,15 +1,16 @@
-# Attendance-Using-Face-Recognition
+# Attendance Using Face Recognition
+
+Attendance Using Face Recognition project repository.
 
 ## Overview
-Attendance-Using-Face-Recognition project repository.
+This repository contains the implementation, configuration, and supporting assets for this project.
+
+## Features
+- Core project functionality (see source files for detailed modules)
 
 ## Tech Stack
 - Python
-
-## Quick Start
-```bash
-pip install -r requirements.txt
-```
+- Flask
 
 ## Project Structure
 - `FaceEncodings/`
@@ -18,5 +19,14 @@ pip install -r requirements.txt
 - `templates/`
 - `utils/`
 
+## Quick Start
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
 ## Contributing
-Contributions are welcome. Open an issue or submit a pull request.
+Contributions are welcome. Please open an issue for major changes before submitting a PR.
+
+## License
+Add your project license details here.
